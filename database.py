@@ -26,6 +26,7 @@ class Bank_Database():
             self.database.commit()
             return (c_id, acc_no)
         except:
+            self.database.rollback()
             return (None, None)
 
     def create_account(self, c_id, account_type, account_balance):
@@ -59,6 +60,7 @@ class Bank_Database():
             self.database.commit()
             return True
         except:
+            self.database.rollback()
             return False
 
     def deposit_money(self, acc_no, amount, commit_on_success=True):
@@ -72,6 +74,7 @@ class Bank_Database():
                 self.database.commit()
             return True
         except:
+            self.database.rollback()
             return False
 
     def withdraw_money(self, acc_no, amount, commit_on_success=True):
