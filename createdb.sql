@@ -34,6 +34,16 @@ CREATE TABLE AccountTransaction (
 ALTER TABLE AccountTransaction
 ADD CONSTRAINT acc_no_AccountTransaction FOREIGN KEY(acc_no) REFERENCES Account(acc_no);
 
+CREATE TABLE Loan (
+    loan_id INTEGER PRIMARY KEY,
+    loan_acc_no INTEGER NOT NULL,
+    loan_amount INTEGER NOT NULL,
+    loan_term INTEGER NOT NULL
+);
+
+ALTER TABLE Loan
+ADD CONSTRAINT loan_acc_no_Loan FOREIGN KEY(loan_acc_no) REFERENCES Account(acc_no);
+
 CREATE TABLE Administrator (
     admin_id INTEGER PRIMARY KEY,
     admin_password VARCHAR(20) NOT NULL

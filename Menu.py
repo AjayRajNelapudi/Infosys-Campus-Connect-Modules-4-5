@@ -46,7 +46,7 @@ class MainMenu:
         password = input("Enter password: ")
         addr = input("Enter your address: ")
         account_balance = input("Enter amount to deposit: ")
-        account_type = input("Enter account type (current / savings): ")
+        account_type = input("Enter account type (CA / SA / FD): ")
 
         return (name, addr, password, account_type, account_balance)
 
@@ -92,6 +92,18 @@ class MainMenu:
                 print("3. Open Fixed Deposit Account")
 
                 choice = int(input("Enter your choice: "))
+
+                accounts = {1: "SA", 2: "CA", 3: "FD"}
+                account_type = accounts[choice]
+
+                accont_balance = input("Enter amount: ")
+
+                acc_no = self.bank_db.open_account(self.c_id, account_type, accont_balance)
+                if acc_no:
+                    print("Success")
+                    print("Account No:", acc_no)
+                else:
+                    print("Failed")
 
             elif action == 3:
                 acc_no = input("Enter account no: ")
@@ -151,7 +163,19 @@ class MainMenu:
                 else:
                     print("Failed")
             elif action == 8:
-                pass
+                acc_no = input("Enter account no: ")
+
+                if not self.bank_db.is_associated_account(self.c_id, acc_no):
+                    print("Not associated account")
+                    continue
+
+                loan_amount = input("Enter loan amount: ")
+
+                loan_sanctioned = self.bank_db.avail_loan(acc_no, loan_amount)
+                if loan_sanctioned:
+                    print("Success")
+                else:
+                    print("Failed")
             elif action == 9:
                 self.logout()
                 print("Logged Out")
