@@ -1,8 +1,10 @@
-# Shivm's Code goes here
-import string
-
+import database
 
 class MainMenu:
+    def __init__(self):
+        self.bank_db = database.Bank_Database()
+        self.c_id = -1
+
     def display_main_menu(self):
         print("Enter Your Service")
         print("1. Sign Up")
@@ -10,66 +12,143 @@ class MainMenu:
         print("3. Admin Sign In")
         print("4. Quit")
 
-        option = int(input())
-        return option
+        choice = int(input())
+        return choice
+
+    def perform_menu_action(self, action):
+        if action == 1:
+            name, addr, password, account_type, account_balance = self.sign_up()
+            c_id, acc_no = self.bank_db.create_account(name, addr, password, account_type, account_balance)
+            if c_id == None or acc_no == None:
+                print("Failed")
+            else:
+                print("c_id", c_id)
+                print("acc_no", acc_no)
+        elif action == 2:
+            if not self.prompt_customer_login():
+                print("Account Locked")
+            else:
+                result = self.sign_in()
+                self.perform_customer_action(result)
+        elif action == 3:
+            if not self.prompt_admin_login():
+                print("Login Failed")
+            else:
+                result = self.admin_sign_in()
+                self.perform_admin_action(result)
+        elif action == 4:
+            exit()
+        else:
+            print("Enter proper choice")
 
     def sign_up(self):
-        result = {}
+        name = input("Enter your name: ")
+        password = input("Enter password: ")
+        addr = input("Enter your address: ")
+        account_balance = input("Enter amount to deposit: ")
+        account_type = input("Enter account type (current / savings): ")
 
-        print("Enter Your Name")
-        result["name"] = input()
-        print("Enter Your Password")
-        result["password"] = input()
-        print("Enter Your Address")
-        result["addr"] = input()
-        print("Enter The Amount To Deposite")
-        result["balance"] = int(input())
-        print("Enter Account Type You Want To Open")
-        result["account_type"] = input()
-        return result
+        return (name, addr, password, account_type, account_balance)
+
+    def prompt_customer_login(self):
+        for i in range(3):
+            print("Enter your Customer ID")
+            c_id = input()
+            print("Enter Your Password")
+            password = input()
+
+            if self.bank_db.validate_login(c_id, password):
+                self.c_id = c_id
+                return True
+            else:
+                print(3 - (i + 1), 'attempts left')
+        else:
+            return False
 
     def sign_in(self):
-        result = {}
-
-        print("Enter your Coustomer ID")
-        result["c_id"] = int(input())
-        print("Enter Your Password")
-        result["password"] = input()
         print("Select Customer Service")
         print("1. Address Change")
-        print("2. Money Deposite")
+        print("2. Money Deposit")
         print("3. Money Widthdrawal")
         print("4 Print Statement")
         print("5.Transfer Money")
         print("6.Account Closure")
         print("7.Logout")
-        result["signin_option"] = int(input())
-        return result
+
+        choice = int(input())
+        return choice
+
+    def perform_customer_action(self, action):
+        while True:
+            if action == 1:
+                new_addr = input("Enter new address: ")
+                if self.bank_db.change_address(self.c_id, new_addr):
+                    print("Success")
+                else:
+                    print("Failed")
+            elif action == 2:
+                acc_no = input("Enter account no: ")
+                amount = input("Enter amount")
+                if self.bank_db.deposit_money(acc_no, amount):
+                    print("Success")
+                else:
+                    print("Failed")
+            elif action == 3:
+                acc_no = input("Enter account no: ")
+                amount = input("Enter amount")
+                if self.bank_db.withdraw_money(acc_no, amount):
+                    print("Success")
+                else:
+                    print("Failed")
+            elif action == 4:
+                acc_no = input("Enter account no: ")
+                statement = self.bank_db.get_statement(acc_no)
+                print(statement)
+            elif action == 5:
+                src_acc = input("Enter source account no: ")
+                dest_acc = input("Enter destination account no: ")
+                amount = input("Enter amount to transfer: ")
+                if self.bank_db.transfer_money(src_acc, dest_acc, amount):
+                    print("Success")
+                else:
+                    print("Failed")
+            elif action == 6:
+                acc_no = input("Enter account no: ")
+                if self.bank_db.close_account(acc_no):
+                    print("Success")
+                else:
+                    print("Failed")
+            elif action == 7:
+                self.logout()
+                print("Logged Out")
+                break
+
+            action = int(input("Enter your choice: "))
+
+    def prompt_admin_login(self):
+        print("Enter Admin ID")
+        admin_id = input()
+        print("Enter Admin Password")
+        admin_password = input()
+
+        return self.bank_db.validate_admin_login(admin_id, admin_password)
 
     def admin_sign_in(self):
-        result = {}
-        print("Enter Admin ID")
-        result["admin_id"] = int(input())
-        print("Enter Admin Password")
-        result["admin_password"] = input()
         print("Select Admin Service")
         print("1. Print Closure Account  History")
         print("2. Admin Logout")
-        result["admin_option"] = int(input())
-        return result
+
+        choice = int(input())
+        return choice
+
+    def perform_admin_action(self, action):
+        pass
+
+    def logout(self):
+        self.c_id = -1
 
 
 menu = MainMenu()
 while True:
     choice = menu.display_main_menu()
-    if choice == 1:
-        result = menu.sign_up()
-        print(result)
-    elif choice == 2:
-        result = menu.sign_in()
-        print(result)
-    elif choice == 3:
-        result = menu.admin_sign_in()
-        print(result)
-    else:
-        exit()
+    menu.perform_menu_action(choice)

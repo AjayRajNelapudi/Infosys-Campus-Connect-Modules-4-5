@@ -39,45 +39,86 @@ class Bank_Database():
             return True
         return False
 
-    def change_address(self, c_id, new_addr):
-        query = "UPDATE Customer SET addr = '%s' WHERE c_id = %s" % (new_addr, c_id)
-        self.database.commit()
-        self.conn.execute(query)
+    def validate_admin_login(self, admin_id, admin_password):
+        query = "SELECT * FROM Administrator WHERE admin_id = %s AND admin_password = '%s'" % (admin_id, admin_password)
+        if self.conn.execute(query):
+            return True
+        return False
 
-    def deposit_money(self, acc_no, money):
+    def change_address(self, c_id, new_addr):
         try:
-            deposit_query = "UPDATE Account SET acc_balance = acc_balance + %s WHERE acc_no = %s" % (money, acc_no)
-            transaction_log_query = "INSERT INTO AccountTransaction VALUES (%s, 'deposit', %s, NOW())" % (acc_no, money)
-            self.conn.execute(deposit_query)
-            self.conn.execute(transaction_log_query)
+            query = "UPDATE Customer SET c_addr = '%s' WHERE c_id = %s" % (new_addr, c_id)
+            self.conn.execute(query)
 
             self.database.commit()
             return True
         except:
             return False
 
-    def withdraw_money(self, acc_no, money):
+    def deposit_money(self, acc_no, amount, commit_on_success=True):
+        try:
+            deposit_query = "UPDATE Account SET acc_balance = acc_balance + %s WHERE acc_no = %s" % (amount, acc_no)
+            transaction_log_query = "INSERT INTO AccountTransaction VALUES (%s, 'deposit', %s, NOW())" % (acc_no, amount)
+            self.conn.execute(deposit_query)
+            self.conn.execute(transaction_log_query)
+
+            if commit_on_success:
+                self.database.commit()
+            return True
+        except:
+            return False
+
+    def withdraw_money(self, acc_no, amount, commit_on_success=True):
         try:
             enquire_balance_query = "SELECT acc_balance FROM Account WHERE acc_no = %s" % (acc_no)
             self.conn.execute(enquire_balance_query)
             acc_balance = self.conn.fetchone()[0]
-            if acc_balance - money > 500:
-                acc_balance = acc_balance - money
+            if acc_balance - amount > 500:
+                acc_balance = acc_balance - amount
             else:
                 return False
 
             withdraw_query = "UPDATE Account SET acc_balance = %s WHERE acc_no = %s" % (acc_balance, acc_no)
             self.conn.execute(withdraw_query)
 
-            transaction_log_query = "INSERT INTO AccountTransaction VALUES (%s, 'withdrawl', %s, NOW())" % (acc_no, money)
+            transaction_log_query = "INSERT INTO AccountTransaction VALUES (%s, 'withdrawl', %s, NOW())" % (acc_no, amount)
             self.conn.execute(transaction_log_query)
+
+            if commit_on_success:
+                self.database.commit()
+            return True
+        except:
+            return False
+
+    def transfer_money(self, src_acc_no, dest_acc_no, amount):
+        withdraw_status = self.withdraw_money(src_acc_no, amount, commit_on_success=False)
+        deposit_status = self.deposit_money(dest_acc_no, amount, commit_on_success=False)
+
+        if withdraw_status and deposit_status:
+            self.database.commit()
+            return True
+        return False
+
+    def get_statement(self, acc_no):
+        query = "SELECT * FROM AccountTransaction WHERE acc_no = %s" % (acc_no)
+        self.conn.execute(query)
+        statement = self.conn.fetchall()
+        return statement
+
+    def close_account(self, acc_no):
+        try:
+            delete_account_query = "DELETE FROM Account WHERE acc_no = %s" % (acc_no)
+            self.conn.execute(delete_account_query)
+
+            delete_customer_account_query = "DELETE FROM CustomerAccount WHERE acc_no = %s" % (acc_no)
+            self.conn.execute(delete_customer_account_query)
 
             self.database.commit()
             return True
         except:
             return False
 
-bank_db = Bank_Database()
-c_id, acc_no = bank_db.create_account('Ajay', 'seethamadhara', 'anitscse034', 'current', '100000000')
-bank_db.deposit_money(acc_no, 1000)
-bank_db.withdraw_money(acc_no, 1000)
+#bank_db = Bank_Database()
+#c_id, acc_no = bank_db.create_account('Shiv', 'seethamadhara', 'anitscse034', 'current', '100000000')
+#bank_db.deposit_money(acc_no, 1000)
+#bank_db.withdraw_money(acc_no, 1000)

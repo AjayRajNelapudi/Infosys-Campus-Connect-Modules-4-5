@@ -10,5 +10,5 @@ class Id_Generator():
         return self.customer_id
 
     def generate_account_no(self):
-        self.customer_id += 1
-        return self.customer_id
+        self.account_no += 1
+        return self.account_no
