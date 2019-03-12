@@ -41,8 +41,6 @@ CREATE TABLE Administrator (
 
 CREATE TABLE ClosedAccount (
     acc_no INTEGER PRIMARY KEY,
-    acc_balance BIGINT NOT NULL,
-    acc_type VARCHAR(10) NOT NULL,
     closing_date TIMESTAMP NOT NULL
 );
 

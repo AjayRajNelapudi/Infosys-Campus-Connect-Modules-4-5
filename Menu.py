@@ -12,7 +12,7 @@ class MainMenu:
         print("3. Admin Sign In")
         print("4. Quit")
 
-        choice = int(input())
+        choice = int(input("Enter your choice: "))
         return choice
 
     def perform_menu_action(self, action):
@@ -52,10 +52,8 @@ class MainMenu:
 
     def prompt_customer_login(self):
         for i in range(3):
-            print("Enter your Customer ID")
-            c_id = input()
-            print("Enter Your Password")
-            password = input()
+            c_id = input("Enter customer id: ")
+            password = input("Enter password: ")
 
             if self.bank_db.validate_login(c_id, password):
                 self.c_id = c_id
@@ -172,7 +170,7 @@ class MainMenu:
             elif action == 2:
                 break
 
-            action = int(input())
+            action = int(input("Enter your choice: "))
 
     def logout(self):
         self.c_id = -1

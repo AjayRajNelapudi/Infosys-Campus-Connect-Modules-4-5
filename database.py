@@ -88,6 +88,7 @@ class Bank_Database():
                 self.database.commit()
             return True
         except:
+            self.database.rollback()
             return False
 
     def transfer_money(self, src_acc_no, dest_acc_no, amount):
@@ -110,28 +111,32 @@ class Bank_Database():
             delete_customer_account_query = "DELETE FROM CustomerAccount WHERE acc_no = %s" % (acc_no)
             self.conn.execute(delete_customer_account_query)
 
-            delete_account_query = "DELETE FROM Account WHERE acc_no = %s" % (acc_no)
-            self.conn.execute(delete_account_query)
+            #delete_account_query = "DELETE FROM Account WHERE acc_no = %s" % (acc_no)
+            #self.conn.execute(delete_account_query)
+
+            insert_closed_account_query = "INSERT INTO ClosedAccount VALUES (%s, NOW())" % (acc_no)
+            self.conn.execute(insert_closed_account_query)
 
             self.database.commit()
             return True
         except:
+            self.database.rollback()
             return False
 
     def is_associated_account(self, c_id, acc_no):
         query = "SELECT * FROM CustomerAccount WHERE c_id = %s AND acc_no = %s" % (c_id, acc_no)
-        if self.conn.execute(query) == 1:
+        status = self.conn.execute(query)
+        if status == 1:
             return True
         return False
 
     def get_closed_accounts(self):
-        query = "SELECT * FROM ClosedAccount ORDER BY closing_date"
+        query = '''
+                SELECT A.*
+                FROM ClosedAccount CA, Account A
+                WHERE A.acc_no = CA.acc_no
+                ORDER BY CA.closing_date
+        '''
         self.conn.execute(query)
         closed_accounts = self.conn.fetchall()
         return closed_accounts
-
-
-#bank_db = Bank_Database()
-#c_id, acc_no = bank_db.create_account('Shiv', 'seethamadhara', 'anitscse034', 'current', '100000000')
-#bank_db.deposit_money(acc_no, 1000)
-#bank_db.withdraw_money(acc_no, 1000)
