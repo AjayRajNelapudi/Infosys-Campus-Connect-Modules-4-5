@@ -66,12 +66,14 @@ class MainMenu:
     def sign_in(self):
         print("Select Customer Service")
         print("1. Address Change")
-        print("2. Money Deposit")
-        print("3. Money Widthdrawal")
-        print("4. Print Statement")
-        print("5. Transfer Money")
-        print("6. Account Closure")
-        print("7. Logout")
+        print("2. Create Account")
+        print("3. Money Deposit")
+        print("4. Money Widthdrawal")
+        print("5. Print Statement")
+        print("6. Transfer Money")
+        print("7. Account Closure")
+        print("8. Avail Loan")
+        print("9. Logout")
 
         choice = int(input())
         return choice
@@ -85,6 +87,13 @@ class MainMenu:
                 else:
                     print("Failed")
             elif action == 2:
+                print("1. Open Savings Account")
+                print("2. Open Current Account")
+                print("3. Open Fixed Deposit Account")
+
+                choice = int(input("Enter your choice: "))
+
+            elif action == 3:
                 acc_no = input("Enter account no: ")
 
                 if not self.bank_db.is_associated_account(self.c_id, acc_no):
@@ -96,7 +105,7 @@ class MainMenu:
                     print("Success")
                 else:
                     print("Failed")
-            elif action == 3:
+            elif action == 4:
                 acc_no = input("Enter account no: ")
 
                 if not self.bank_db.is_associated_account(self.c_id, acc_no):
@@ -108,7 +117,7 @@ class MainMenu:
                     print("Success")
                 else:
                     print("Failed")
-            elif action == 4:
+            elif action == 5:
                 acc_no = input("Enter account no: ")
 
                 if not self.bank_db.is_associated_account(self.c_id, acc_no):
@@ -117,7 +126,7 @@ class MainMenu:
 
                 statement = self.bank_db.get_statement(acc_no)
                 print(statement)
-            elif action == 5:
+            elif action == 6:
                 src_acc = input("Enter source account no: ")
 
                 if not self.bank_db.is_associated_account(self.c_id, src_acc):
@@ -130,7 +139,7 @@ class MainMenu:
                     print("Success")
                 else:
                     print("Failed")
-            elif action == 6:
+            elif action == 7:
                 acc_no = input("Enter account no: ")
 
                 if not self.bank_db.is_associated_account(self.c_id, acc_no):
@@ -141,7 +150,9 @@ class MainMenu:
                     print("Success")
                 else:
                     print("Failed")
-            elif action == 7:
+            elif action == 8:
+                pass
+            elif action == 9:
                 self.logout()
                 print("Logged Out")
                 break
@@ -156,7 +167,7 @@ class MainMenu:
 
     def admin_sign_in(self):
         print("Select Admin Service")
-        print("1. Print Closure Account  History")
+        print("1. Print Closure Account History")
         print("2. Admin Logout")
 
         choice = int(input())

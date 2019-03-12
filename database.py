@@ -14,24 +14,30 @@ class Bank_Database():
         self.conn.execute('USE Bank')
         self.id_gen = idgen.Id_Generator()
 
-    def create_account(self, name, addr, password, account_type, account_balance):
+    def open_account(self, name, addr, password, account_type, account_balance):
         try:
             c_id = self.id_gen.generate_customer_id()
-            acc_no = self.id_gen.generate_account_no()
 
             customer_insert_query = "INSERT INTO Customer VALUES (%s, '%s', '%s', '%s')" % (c_id, password, name, addr)
             self.conn.execute(customer_insert_query)
 
-            account_insert_query = "INSERT INTO Account VALUES (%s, %s, '%s')" % (acc_no, account_balance, account_type)
-            self.conn.execute(account_insert_query)
-
-            customer_account_insert_query = "INSERT INTO CustomerAccount VALUES (%s, %s)" % (c_id, acc_no)
-            self.conn.execute(customer_account_insert_query)
+            acc_no = self.create_account(c_id, account_type, account_balance)
 
             self.database.commit()
             return (c_id, acc_no)
         except:
             return (None, None)
+
+    def create_account(self, c_id, account_type, account_balance):
+        acc_no = self.id_gen.generate_account_no()
+
+        account_insert_query = "INSERT INTO Account VALUES (%s, %s, '%s')" % (acc_no, account_balance, account_type)
+        self.conn.execute(account_insert_query)
+
+        customer_account_insert_query = "INSERT INTO CustomerAccount VALUES (%s, %s)" % (c_id, acc_no)
+        self.conn.execute(customer_account_insert_query)
+
+        return acc_no
 
     def validate_login(self, c_id, password):
         query = "SELECT * FROM Customer WHERE c_id = %s AND c_password = '%s'" % (c_id, password)
