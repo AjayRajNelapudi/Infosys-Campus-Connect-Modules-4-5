@@ -3,7 +3,7 @@ import random
 class Id_Generator():
     def __init__(self):
         self.customer_id = random.randint(1, 1000)
-        self.account_no = random.randint(99999999999, 99999999999999999)
+        self.account_no = random.randint(1, 1000000000)
 
     def generate_customer_id(self):
         self.customer_id += 1

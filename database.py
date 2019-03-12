@@ -41,7 +41,7 @@ class Bank_Database():
 
     def validate_admin_login(self, admin_id, admin_password):
         query = "SELECT * FROM Administrator WHERE admin_id = %s AND admin_password = '%s'" % (admin_id, admin_password)
-        if self.conn.execute(query):
+        if self.conn.execute(query) == 1:
             return True
         return False
 
@@ -73,8 +73,8 @@ class Bank_Database():
             enquire_balance_query = "SELECT acc_balance FROM Account WHERE acc_no = %s" % (acc_no)
             self.conn.execute(enquire_balance_query)
             acc_balance = self.conn.fetchone()[0]
-            if acc_balance - amount > 500:
-                acc_balance = acc_balance - amount
+            if acc_balance - int(amount) > 500:
+                acc_balance = acc_balance - int(amount)
             else:
                 return False
 
@@ -107,16 +107,29 @@ class Bank_Database():
 
     def close_account(self, acc_no):
         try:
-            delete_account_query = "DELETE FROM Account WHERE acc_no = %s" % (acc_no)
-            self.conn.execute(delete_account_query)
-
             delete_customer_account_query = "DELETE FROM CustomerAccount WHERE acc_no = %s" % (acc_no)
             self.conn.execute(delete_customer_account_query)
+
+            delete_account_query = "DELETE FROM Account WHERE acc_no = %s" % (acc_no)
+            self.conn.execute(delete_account_query)
 
             self.database.commit()
             return True
         except:
             return False
+
+    def is_associated_account(self, c_id, acc_no):
+        query = "SELECT * FROM CustomerAccount WHERE c_id = %s AND acc_no = %s" % (c_id, acc_no)
+        if self.conn.execute(query) == 1:
+            return True
+        return False
+
+    def get_closed_accounts(self):
+        query = "SELECT * FROM ClosedAccount ORDER BY closing_date"
+        self.conn.execute(query)
+        closed_accounts = self.conn.fetchall()
+        return closed_accounts
+
 
 #bank_db = Bank_Database()
 #c_id, acc_no = bank_db.create_account('Shiv', 'seethamadhara', 'anitscse034', 'current', '100000000')

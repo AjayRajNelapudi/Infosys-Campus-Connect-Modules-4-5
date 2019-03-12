@@ -70,10 +70,10 @@ class MainMenu:
         print("1. Address Change")
         print("2. Money Deposit")
         print("3. Money Widthdrawal")
-        print("4 Print Statement")
-        print("5.Transfer Money")
-        print("6.Account Closure")
-        print("7.Logout")
+        print("4. Print Statement")
+        print("5. Transfer Money")
+        print("6. Account Closure")
+        print("7. Logout")
 
         choice = int(input())
         return choice
@@ -88,24 +88,44 @@ class MainMenu:
                     print("Failed")
             elif action == 2:
                 acc_no = input("Enter account no: ")
-                amount = input("Enter amount")
+
+                if not self.bank_db.is_associated_account(self.c_id, acc_no):
+                    print("Not associated account")
+                    continue
+
+                amount = input("Enter amount: ")
                 if self.bank_db.deposit_money(acc_no, amount):
                     print("Success")
                 else:
                     print("Failed")
             elif action == 3:
                 acc_no = input("Enter account no: ")
-                amount = input("Enter amount")
+
+                if not self.bank_db.is_associated_account(self.c_id, acc_no):
+                    print("Not associated account")
+                    continue
+
+                amount = input("Enter amount: ")
                 if self.bank_db.withdraw_money(acc_no, amount):
                     print("Success")
                 else:
                     print("Failed")
             elif action == 4:
                 acc_no = input("Enter account no: ")
+
+                if not self.bank_db.is_associated_account(self.c_id, acc_no):
+                    print("Not associated account")
+                    continue
+
                 statement = self.bank_db.get_statement(acc_no)
                 print(statement)
             elif action == 5:
                 src_acc = input("Enter source account no: ")
+
+                if not self.bank_db.is_associated_account(self.c_id, src_acc):
+                    print("Not associated account")
+                    continue
+
                 dest_acc = input("Enter destination account no: ")
                 amount = input("Enter amount to transfer: ")
                 if self.bank_db.transfer_money(src_acc, dest_acc, amount):
@@ -114,6 +134,11 @@ class MainMenu:
                     print("Failed")
             elif action == 6:
                 acc_no = input("Enter account no: ")
+
+                if not self.bank_db.is_associated_account(self.c_id, acc_no):
+                    print("Not associated account")
+                    continue
+
                 if self.bank_db.close_account(acc_no):
                     print("Success")
                 else:
@@ -126,10 +151,8 @@ class MainMenu:
             action = int(input("Enter your choice: "))
 
     def prompt_admin_login(self):
-        print("Enter Admin ID")
-        admin_id = input()
-        print("Enter Admin Password")
-        admin_password = input()
+        admin_id = input("Enter admin id: ")
+        admin_password = input("Enter admin password: ")
 
         return self.bank_db.validate_admin_login(admin_id, admin_password)
 
@@ -142,7 +165,14 @@ class MainMenu:
         return choice
 
     def perform_admin_action(self, action):
-        pass
+        while True:
+            if action == 1:
+                closed_accounts = self.bank_db.get_closed_accounts()
+                print(closed_accounts)
+            elif action == 2:
+                break
+
+            action = int(input())
 
     def logout(self):
         self.c_id = -1
