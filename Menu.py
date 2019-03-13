@@ -10,7 +10,7 @@ class MainMenu:
         print("1. Sign Up")
         print("2. Sign In")
         print("3. Admin Sign In")
-        print("4. Quit")
+        print("0. Quit")
 
         choice = int(input("Enter your choice: "))
         return choice
@@ -36,7 +36,7 @@ class MainMenu:
             else:
                 result = self.admin_sign_in()
                 self.perform_admin_action(result)
-        elif action == 4:
+        elif action == 0:
             exit()
         else:
             print("Enter proper choice")
@@ -73,7 +73,7 @@ class MainMenu:
         print("6. Transfer Money")
         print("7. Account Closure")
         print("8. Avail Loan")
-        print("9. Logout")
+        print("0. Logout")
 
         choice = int(input())
         return choice
@@ -176,7 +176,7 @@ class MainMenu:
                     print("Success")
                 else:
                     print("Failed")
-            elif action == 9:
+            elif action == 0:
                 self.logout()
                 print("Logged Out")
                 break
