@@ -192,7 +192,17 @@ class MainMenu:
     def admin_sign_in(self):
         print("Select Admin Service")
         print("1. Print Closure Account History")
-        print("2. Admin Logout")
+        print("2. FD Report of a customer")
+        print("3. FD Report of Customers vis-à-vis another Customer")
+        print("4. FD Report of Customers w.r.t a particular FD Amount")
+        print("5. Loan Report of a Customer")
+        print("6. Loan Report of Customers vis-à-vis another Customer")
+        print("7. Loan Report of Customers w.r.t a particular Loan Amount")
+        print("8. Loan – FD Report of Customers")
+        print("9. Report of Customers who are yet to avail a loan (customer id, first name, last name)")
+        print("10. Report of Customers who are yet to open a FD account (customer id, first name, last name)")
+        print("11. Report of Customers who neither have a loan nor a FD account with the bank (customer id, first name, last name)")
+        print("0. Admin Logout")
 
         choice = int(input())
         return choice
@@ -200,9 +210,45 @@ class MainMenu:
     def perform_admin_action(self, action):
         while True:
             if action == 1:
-                closed_accounts = self.bank_db.get_closed_accounts()
-                print(closed_accounts)
+                report = self.bank_db.get_closed_accounts()
+                print(report)
             elif action == 2:
+                c_id = input("Enter c_id: ")
+                report = self.bank_db.get_fd_report(c_id)
+                print(report)
+            elif action == 3:
+                c_id = input("Enter c_id: ")
+                report = self.bank_db.get_fd_report_vis_a_vis_customer(c_id)
+                print(report)
+            elif action == 4:
+                amount = input("Enter amount: ")
+                report = self.bank_db.get_fd_report_wrt_amount(amount)
+                print(report)
+            elif action == 5:
+                c_id = input("Enter c_id: ")
+                report = self.bank_db.get_loan_report_of_customer(c_id)
+                print(report)
+            elif action == 6:
+                c_id = input("Enter c_id: ")
+                report = self.bank_db.get_fd_report_vis_a_vis_customer(c_id)
+                print(report)
+            elif action == 7:
+                amount = input("Enter amount: ")
+                report = self.bank_db.get_loan_report_wrt_amount(amount)
+                print(report)
+            elif action == 8:
+                report = self.bank_db.get_loan_fd_report()
+                print(report)
+            elif action == 9:
+                report = self.bank_db.get_no_loan_customers()
+                print(report)
+            elif action == 10:
+                report = self.bank_db.get_no_fd_acc_customers()
+                print(report)
+            elif action == 11:
+                report = self.bank_db.get_no_loan_no_fd_customers()
+                print(report)
+            elif action == 0:
                 break
 
             action = int(input("Enter your choice: "))
