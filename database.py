@@ -246,3 +246,52 @@ class Bank_Database():
         report = self.conn.fetchall()
 
         return report
+
+    def get_loan_fd_report(self):
+        query = '''
+                SELECT C.c_id, C.c_name, SUM(L.loan_amount), SUM(A.acc_balance)
+                FROM Customer C, Account A, Loan L, CustomerAccount CA
+                WHERE C.c_id = CA.c_id AND CA.acc_no = A.acc_no and A.acc_type = 'FD'
+                AND SUM(L.loan_amount) > SUM(A.acc_balance)
+        '''
+        self.conn.execute(query)
+        report = self.conn.fetchall()
+
+        return report
+
+    def get_no_loan_customers(self):
+        query = '''
+                SELECT C.c_id, C.c_name
+                FROM Customer C, Account A, CustomerAccount CA, Loan L
+                WHERE C.c_id = CA.c_id
+                AND CA.acc_no NOT IN (SELECT L.loan_acc_no FROM Loan L)
+        '''
+        self.conn.execute(query)
+        report = self.conn.fetchall()
+
+        return report
+
+    def get_no_fd_acc_customers(self):
+        query = '''
+                SELECT C.c_id, C.c_name
+                FROM Customer C, Account A, CustomerAccount CA
+                WHERE C.c_id = CA.C_id
+                AND CA.acc_no NOT IN (SELECT __A__.acc_no FROM Account __A__
+                                      WHERE __A__.acc_type = 'FD')
+        '''
+        self.conn.execute(query)
+        report = self.conn.fetchall()
+
+        return report
+
+    def get_no_loan_no_fd_customers(self):
+        query = '''
+                SELECT __C__.c_id 
+                FROM Customer __C__, CustomerAccount __CA__, Account __A__, Loan __L__
+                WHERE __C__.c_id = __CA__.c_id AND __CA__.acc_no = __A__.acc_no
+                AND __A__.acc_type != 'FD' AND __A__.acc_no NOT IN (SELECT L.loan_acc_no FROM Loan L)
+        '''
+        self.conn.execute(query)
+        report = self.conn.fetchall()
+
+        return report
